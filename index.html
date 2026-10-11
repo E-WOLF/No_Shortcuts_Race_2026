@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<style>html{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Chafed and Confused</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: one phone-first column. Sticky filter bar, then a leg sheet read top to bottom like a relay crew card. */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --ink:#0e1b2e; --muted:#55627a; --line:#d3dae6;
+  --accent:#0b5fc4; --hi:#ffd60a; --hi-ink:#1c1a00; --warn:#a85508; --run-bg:#eef4fd; --van-bg:#f6f4ea;
+  --r0:#2563eb; --r1:#d02670; --r2:#d9500b; --r3:#15803d; --r4:#8b3fd9; --r5:#0e7490; --r6:#a16207; --r7:#c81e1e;
+  --on-color:#ffffff;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0a1220; --surface:#121d30; --ink:#e9eef7; --muted:#97a5bd; --line:#27364f;
+  --accent:#6bb1ff; --hi:#ffd60a; --hi-ink:#1c1a00; --warn:#f5b94a; --run-bg:#14243d; --van-bg:#1f2230;
+  --r0:#4f83f5; --r1:#e4508f; --r2:#ee6c2b; --r3:#2ea457; --r4:#a568ea; --r5:#1e9bb8; --r6:#c2861c; --r7:#e24a4a;
+  --on-color:#ffffff; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0a1220; --surface:#121d30; --ink:#e9eef7; --muted:#97a5bd; --line:#27364f;
+  --accent:#6bb1ff; --hi:#ffd60a; --hi-ink:#1c1a00; --warn:#f5b94a; --run-bg:#14243d; --van-bg:#1f2230;
+  --r0:#4f83f5; --r1:#e4508f; --r2:#ee6c2b; --r3:#2ea457; --r4:#a568ea; --r5:#1e9bb8; --r6:#c2861c; --r7:#e24a4a;
+  --on-color:#ffffff; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:20px 56px;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.05}
+h1{font-size:clamp(40px,11vw,64px);font-weight:700;text-transform:uppercase;letter-spacing:.01em}
+h1 span{background:var(--hi);color:var(--hi-ink);padding:0 .12em}
+h2{font-size:26px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.sub{color:var(--muted);margin:6px 0 0}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:16px}
+.facts div{background:var(--surface);padding:10px 12px;min-width:0}
+.facts b{display:block;font-family:var(--display);font-size:24px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.facts small{color:var(--muted);font-size:13px}
+.lbl{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:2px solid var(--ink);padding-block:10px;display:flex;flex-direction:column;gap:8px}
+.bar-in{max-width:760px;margin:0 auto;padding-inline:16px;width:100%;display:flex;flex-direction:column;gap:8px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip,.seg button{font:600 15px var(--body);border:1.5px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 12px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:7px;border-radius:0;min-height:40px}
+.chip[aria-pressed="true"],.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.dot{width:11px;height:11px;flex:none;display:inline-block}
+.seg{display:flex}
+.seg button{flex:1;justify-content:center}
+.seg button+button{border-left:0}
+
+.you{border:2px solid var(--ink);background:var(--surface)}
+.you h2{padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.you h2 small{font:500 15px var(--body);text-transform:none;letter-spacing:0;color:var(--muted)}
+.you a{display:grid;grid-template-columns:66px 1fr auto;gap:10px;align-items:baseline;padding:10px 14px;border-top:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.you a b{font-family:var(--display);font-size:20px;white-space:nowrap}
+.you a span{min-width:0}
+.you a em{font-style:normal;color:var(--muted);font-size:14px;display:block}
+.you a i{font-style:normal;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+
+.map{background:var(--surface);border:1px solid var(--line);padding:8px}
+.map svg{display:block;width:100%;height:auto;max-height:520px}
+.map text{font:600 44px var(--body);fill:var(--ink)}
+.map .gapt{fill:var(--muted);font-weight:500}
+.map polyline{fill:none;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+.map .dim{opacity:.18}
+.map .gap{stroke:var(--muted);stroke-width:4;stroke-dasharray:4 14}
+.map circle{fill:var(--surface);stroke:var(--ink);stroke-width:3}
+
+.round{display:flex;flex-direction:column;gap:12px}
+.round>header{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:6px}
+.round>header p{margin:0;color:var(--muted);font-size:15px}
+.leg{background:var(--surface);border:1px solid var(--line);scroll-margin-top:130px}
+.leg>header{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:0 12px 0 0}
+.num{font:700 30px/1 var(--display);color:var(--on-color);width:58px;align-self:stretch;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.who{padding-block:10px;min-width:0}
+.who b{font:700 24px/1.1 var(--display);text-transform:uppercase;letter-spacing:.02em;display:block}
+.who span{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.when{text-align:right;padding-block:10px}
+.when b{font:700 22px/1.1 var(--display);display:block;font-variant-numeric:tabular-nums;white-space:nowrap}
+.when span{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tags{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 10px 12px}
+.tag{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;padding:2px 7px;border:1.5px solid var(--line);color:var(--muted)}
+.tag.light{background:var(--hi);color:var(--hi-ink);border-color:var(--hi)}
+.tag.warn{color:var(--warn);border-color:var(--warn)}
+.part{padding:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.part.run{background:var(--run-bg)}
+.part.drive{background:var(--van-bg)}
+.part p{margin:0}
+.ft{font-weight:600}
+.ft small{display:block;font-weight:400;color:var(--muted);font-size:14px}
+.cues{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:3px}
+.cues li{display:grid;grid-template-columns:52px 1fr;gap:8px;font-size:15px}
+.cues li span{color:var(--muted);font-variant-numeric:tabular-nums}
+.note{font-size:15px}
+.muted{color:var(--muted);font-size:14px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:600 14px var(--body);text-decoration:none;border:1.5px solid var(--ink);color:var(--ink);padding:7px 11px;background:var(--surface);min-height:36px;display:inline-flex;align-items:center}
+.btn.go{background:var(--ink);color:var(--bg)}
+.baths{margin:0;padding:0;list-style:none;font-size:14px;display:flex;flex-direction:column;gap:2px}
+.transfer{border:2px solid var(--ink);background:var(--hi);color:var(--hi-ink);padding:14px;display:flex;flex-direction:column;gap:8px}
+.transfer h3{font-size:26px;text-transform:uppercase}
+.transfer p{margin:0}
+.transfer .btn{border-color:var(--hi-ink);color:var(--hi-ink);background:transparent}
+.transfer .muted{color:inherit}
+.tin{font:600 16px var(--body);font-variant-numeric:tabular-nums;width:7.5em;padding:8px 10px;border:1.5px solid var(--ink);background:var(--surface);color:var(--ink);border-radius:0;min-height:40px}
+.tin[aria-invalid="true"]{border-color:var(--warn);outline:2px solid var(--warn)}
+.tin:disabled{opacity:.55}
+.part.log{background:var(--surface)}
+.logrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tag.done{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tag.next{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.paces{background:var(--surface);border:2px solid var(--ink);padding:12px;display:flex;flex-direction:column;gap:10px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px}
+.prow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;min-width:0}
+.prow label{display:grid;grid-template-columns:auto 1fr;column-gap:7px;align-items:center;font-weight:600;min-width:0}
+.prow label small{grid-column:2;font-weight:400;color:var(--muted);font-variant-numeric:tabular-nums}
+.prow .tin{width:4.6em}
+.tin.tod{width:auto;min-width:8.5em}
+[data-view="run"] .drive,[data-view="drive"] .part.run{display:none}
+
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.rules section{background:var(--surface);border:1px solid var(--line);padding:12px;min-width:0}
+.rules h3{font-size:20px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px}
+.rules ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:15px}
+.links{display:flex;gap:8px;flex-wrap:wrap}
+.quick{background:var(--surface);border:1px solid var(--line);padding:12px;display:flex;flex-direction:column;gap:10px}
+.qrow{display:grid;grid-template-columns:64px 1fr;gap:6px 10px;align-items:start}
+.qrow .lbl{padding-top:10px}
+.qrow .links{min-width:0}
+@media (max-width:520px){.qrow{grid-template-columns:1fr}.qrow .lbl{padding-top:0}}
+
+footer{color:var(--muted);font-size:14px}
+@media (max-width:420px){.who b{font-size:21px}.when b{font-size:19px}.num{width:48px;font-size:26px}}
+</style>
+</head>
+<body>
+<div class="bar"><div class="bar-in">
+  <div class="chips" id="chips" role="group" aria-label="Filter by runner"></div>
+  <div class="seg" role="group" aria-label="Show directions">
+    <button type="button" id="v-both" data-v="both">Run + van</button>
+    <button type="button" id="v-run" data-v="run">Running</button>
+    <button type="button" id="v-drive" data-v="drive">Driving</button>
+  </div>
+</div></div>
+
+<div class="wrap" id="wrap" data-view="both">
+  <div>
+    <p class="lbl">No Shortcuts Time Trial · Santa Monica to San Diego</p>
+    <h1><span>Chafed</span> and Confused</h1>
+    <p class="sub">Friday, October 23, 2026. Be at Santa Monica Pier by 4:15 AM, gun at 5:00 AM. Eight runners, Olivia driving the van.</p>
+    <div class="facts" id="facts"></div>
+  </div>
+
+
+  <section class="paces" aria-label="Runner paces">
+    <div><h2>Paces</h2><p class="muted" style="margin:4px 0 0">Enter your expected pace per mile and every time on the page updates. Type 9:30 or 930.</p></div>
+    <div class="pgrid" id="pgrid"></div>
+    <p class="muted" id="pmsg" style="margin:0" hidden></p>
+    <p class="muted" id="sync" style="margin:0">Connecting to the shared copy.</p>
+  </section>
+
+  <nav class="quick" aria-label="Team links">
+    <div class="qrow"><span class="lbl">Route</span><div class="links">
+      <a class="btn go" href="https://www.strava.com/routes/3147609404958496012" target="_blank" rel="noopener">Strava running route</a>
+      <a class="btn" href="https://github.com/gowthestokes/NoShortcutsRace" target="_blank" rel="noopener">Route and bathroom map files</a>
+      <a class="btn" href="https://docs.google.com/document/d/1aW_xLe6Er1tfRyqmquauu3QJrMM78qeeHjHJH709c2k/edit?tab=t.0" target="_blank" rel="noopener">Race doc</a>
+    </div></div>
+    <div class="qrow"><span class="lbl">Race</span><div class="links">
+      <a class="btn" href="https://chat.whatsapp.com/BidQMbeELYe1bkHQgqkj5A?mode=gi_t" target="_blank" rel="noopener">Race WhatsApp group</a>
+      <a class="btn" href="https://strava.app.link/di7anGV9k2b" target="_blank" rel="noopener">Strava event</a>
+    </div></div>
+    <p class="muted" style="margin:0">Race organizers: call, text or WhatsApp 424-402-7091 · hello@noshortcuts.com</p>
+  </nav>
+
+  <div class="you" id="you" hidden></div>
+
+  <div class="map" id="map" aria-label="Route map from Santa Monica to San Diego"></div>
+
+  <div id="legs" style="display:flex;flex-direction:column;gap:28px"></div>
+
+  <div>
+    <h2 style="margin-bottom:10px">How handoffs work</h2>
+    <div class="rules">
+      <section><h3>City streets, Santa Monica to Compton</h3><ul>
+        <li>The van drives the race route and waits at the next handoff.</li>
+        <li>Anything before 7 AM is in the dark. Headlamp and reflective vest on.</li>
+        <li>Dougie runs one 8 mile block in round 1, after sunrise. The van leapfrogs him with water.</li></ul></section>
+      <section><h3>LA River trail</h3><ul>
+        <li>The runner always carries a phone on the trail. <span id="trailwho"></span></li>
+        <li>The path is on the east bank from Rosecrans to Long Beach. No streets to cross and no van access between the bridges.</li>
+        <li>The van drives ahead, sends the incoming runner onto the trail and collects the outgoing runner where the trail meets the road.</li>
+        <li>Mid-trail handoff is the bike path entrance on Del Amo Blvd. Van parks on Oregon Ave, first right after the bridge heading east.</li>
+        <li>Follow the trail south until it passes under PCH. Meet the van at the first bike path exit after, by Ocean Blue Environmental.</li>
+        <li>Trail reviews report encampments south of Willow St. That is the last mile of the second trail leg, in daylight.</li>
+        <li>These two legs stay longer than the rest because the van can only reach the trail at the bridges.</li></ul></section>
+      <section><h3>Coast Highway, Long Beach to San Clemente</h3><ul>
+        <li>The road narrows in places. Be careful and run the bike path where there is one.</li>
+        <li>Careful at the traffic circle in Long Beach.</li>
+        <li>Where the van cannot pull over, it drops and collects runners the same way as on the river trail.</li></ul></section>
+      <section><h3>The I-5 drive from San Mateo Point</h3><ul>
+        <li>Nobody runs on a freeway. Camp Pendleton means everyone rides, runner included.</li>
+        <li>Team photo at San Mateo Point, then I-5 south to Exit 54C.</li>
+        <li>Cross the road after the exit and pull into the Chevron. The next runner picks up Coast Highway there.</li></ul></section>
+      <section><h3>Oceanside to the finish</h3><ul>
+        <li>All of it is after sunset at this pace. Lights and vests on for every leg.</li>
+        <li>Legs get shorter each round, so handoffs come every 10 to 20 minutes. The next runner should be ready before the van stops.</li>
+        <li>The van follows the race route. No stopping on the Torrey Pines grade or on Torrey Pines Rd.</li></ul></section>
+      <section><h3>Everyone brings</h3><ul>
+        <li>Headlamp and a reflective or light-up vest.</li>
+        <li>Race kit, tank and hat, worn at the start.</li>
+        <li>Phone, charged. Tile tracker for race tracking.</li>
+        <li>Team kit in the van: first aid kit and pepper spray.</li></ul></section>
+    </div>
+  </div>
+
+  <footer>
+    <p>Times start from a 5:00 AM gun and use each runner's pace from the table at the top, 9:30 until someone changes it. Once a leg has a logged finish time, the next runner starts from it and every later time moves. The I-5 stop is planned at 40 minutes until you log the restart. Times not yet logged do not include handoff time.</p>
+    <p>Handoffs sit on the Strava route at spots taken from the organizers' turn sheet and bathroom map. Stops tagged Confirm stop have no verified landmark, so check them on Street View before race day. Confirm hours for any business bathroom.</p>
+  </footer>
+</div>
+
+<script>
+const D={"runners":["Jack","Ashleigh","Julia","Caroline","Dougie","Eli","Sean","Maco"],"ex":[{"n":0,"mile":0.0,"name":"Santa Monica Pier","note":"200 Santa Monica Pier. Leave the van on Ocean Ave or a side street off it.","confirm":0,"lat":34.01123,"lon":-118.49516,"baths":[{"kind":"Public restroom","name":"Public restroom","addr":"Santa Monica, CA 90401","lat":34.01178,"lon":-118.494},{"kind":"Coffee or store","name":"McDonald's","addr":"1540 2nd St, Santa Monica, CA 90405","lat":34.01209,"lon":-118.49435}]},{"n":1,"mile":4.33,"name":"Washington Blvd at the West Washington fork","note":"The Boy & The Bear coffee, 12712 Washington Blvd. Handoff is where the route forks right onto West Washington. Street parking.","confirm":0,"lat":33.99675,"lon":-118.43482,"baths":[{"kind":"Coffee or store","name":"The Boy & The Bear","addr":"12712 Washington Blvd Ste 101, Los Angeles, CA 90066","lat":33.99657,"lon":-118.43503}]},{"n":2,"mile":8.79,"name":"W 78th St where it becomes W 79th St","note":"Residential street corner where the route bends onto W 79th St. Street parking. No landmark here, use the pin.","confirm":1,"lat":33.96847,"lon":-118.38173,"baths":[]},{"n":3,"mile":12.33,"name":"7-Eleven, 3018 W Manchester Blvd","note":"3018 W Manchester Blvd, Inglewood, CA 90305. Pull into the lot.","confirm":0,"lat":33.95994,"lon":-118.32574,"baths":[{"kind":"Gas or fast food","name":"Rally's","addr":"8500 Crenshaw Dr, Inglewood, CA 90305","lat":33.96052,"lon":-118.32629},{"kind":"Gas or fast food","name":"Pch Oil","addr":"3100 W Manchester Blvd, Inglewood, CA 90305","lat":33.95965,"lon":-118.32688},{"kind":"Gas or fast food","name":"Popeyes Louisiana Kitchen","addr":"2934 W Manchester Blvd, Inglewood, CA 90305","lat":33.95974,"lon":-118.32523}]},{"n":4,"mile":16.48,"name":"Burger King, 1202 Firestone Blvd","note":"1202 Firestone Blvd, Los Angeles, CA 90001. Pull into the lot.","confirm":0,"lat":33.96015,"lon":-118.25339,"baths":[{"kind":"Gas or fast food","name":"Burger King","addr":"1202 Firestone Blvd, Los Angeles, CA 90001","lat":33.95993,"lon":-118.25369},{"kind":"Gas or fast food","name":"Church's Texas Chicken","addr":"1030 E Manchester Ave, Los Angeles, CA 90001","lat":33.95987,"lon":-118.2568},{"kind":"Gas or fast food","name":"KFC","addr":"8515 S Central Ave, Los Angeles, CA 90001","lat":33.96053,"lon":-118.25672}]},{"n":5,"mile":24.24,"name":"Atlantic Ave at Rosecrans Ave","note":"7-Eleven, 4417 Rosecrans Ave, Compton. Last easy stop before the river trail. The outgoing runner takes a phone.","confirm":0,"lat":33.90356,"lon":-118.19392,"baths":[{"kind":"Gas or fast food","name":"ARCO","addr":"4351 Rosecrans Ave, East Compton, CA 90221","lat":33.9038,"lon":-118.1954},{"kind":"Gas or fast food","name":"United Brothers","addr":"4502 Rosecrans Ave, Compton, CA 90221","lat":33.90332,"lon":-118.19357},{"kind":"Coffee or store","name":"7-Eleven","addr":"4417 Rosecrans Ave, Compton, CA 90221","lat":33.90388,"lon":-118.19439}]},{"n":6,"mile":29.17,"name":"LA River trail at Del Amo Blvd","note":"Bike path entrance on Del Amo Blvd, east side of the river. Cross the bridge heading east, turn right on Oregon Ave and park on the street.","confirm":0,"lat":33.84649,"lon":-118.20265,"baths":[]},{"n":7,"mile":33.17,"name":"Bike path exit after PCH","note":"Ocean Blue Environmental, 925 W Esther St, Long Beach. Organizer meeting point, first exit after the trail passes under PCH.","confirm":0,"lat":33.78982,"lon":-118.20332,"baths":[]},{"n":8,"mile":37.33,"name":"7-Eleven, 5103 Pacific Coast Hwy","note":"5103 Pacific Coast Hwy, Long Beach, CA 90804. Pull into the lot.","confirm":0,"lat":33.78366,"lon":-118.13379,"baths":[{"kind":"Coffee or store","name":"7-Eleven","addr":"5103 Pacific Coast Hwy, Long Beach, CA 90804","lat":33.78404,"lon":-118.13382}]},{"n":9,"mile":40.91,"name":"7-Eleven, 1200 Pacific Coast Hwy","note":"1200 Pacific Coast Hwy, Seal Beach, CA 90740. Pull into the lot.","confirm":0,"lat":33.74299,"lon":-118.09961,"baths":[{"kind":"Grocery","name":"Pavilions","addr":"1101 Pacific Coast Hwy, Seal Beach, CA 90740","lat":33.744,"lon":-118.09998},{"kind":"Gas or fast food","name":"Subway","addr":"914 Pacific Coast Hwy, Seal Beach, CA 90740","lat":33.744,"lon":-118.10219},{"kind":"Coffee or store","name":"7-Eleven","addr":"1200 Pacific Coast Hwy, Seal Beach, CA 90740","lat":33.74264,"lon":-118.10001}]},{"n":10,"mile":45.25,"name":"Bolsa Chica State Beach lot","note":"18179 Pacific Coast Hwy, Huntington Beach. State beach lot with a restroom on the ocean side of PCH. Day-use fee if you drive in.","confirm":1,"lat":33.69794,"lon":-118.04945,"baths":[{"kind":"Public restroom","name":"Public restroom","addr":"18179 Pacific Coast Hwy, Huntington Beach, CA 92648","lat":33.69774,"lon":-118.04965}]},{"n":11,"mile":49.0,"name":"76, 706 Pacific Coast Hwy","note":"706 Pacific Coast Hwy, Huntington Beach, CA 92648. Pull into the lot.","confirm":0,"lat":33.65889,"lon":-118.00455,"baths":[{"kind":"Public restroom","name":"Public restroom","addr":"2 6th St, Huntington Beach, CA 92648","lat":33.65978,"lon":-118.00657},{"kind":"Coffee or store","name":"602 Coffee House","addr":"602 Pacific Coast Hwy, Huntington Beach, CA 92648","lat":33.65869,"lon":-118.00361},{"kind":"Coffee or store","name":"Uncle Fluffy","addr":"120 5th St Ste C120, Huntington Beach, CA 92648","lat":33.65782,"lon":-118.00246}]},{"n":12,"mile":53.63,"name":"W Coast Hwy at Balboa Blvd","note":"Strip center at 4533 W Coast Hwy, Newport Beach, by the Superior Ave light. Pull into the lot.","confirm":1,"lat":33.62233,"lon":-117.93758,"baths":[{"kind":"Gas or fast food","name":"Chronic Tacos","addr":"4533 Pacific Coast Hwy, Newport Beach, CA 92663","lat":33.62184,"lon":-117.93815},{"kind":"Coffee or store","name":"Al Cappuccino Coffee House","addr":"4547 West Coast Hwy, Newport Beach, CA 92663","lat":33.62194,"lon":-117.9383}]},{"n":13,"mile":57.65,"name":"Mobil, 2201 East Coast Hwy","note":"2201 East Coast Hwy, Corona Del Mar, CA 92625. Pull into the lot.","confirm":0,"lat":33.60518,"lon":-117.87534,"baths":[{"kind":"Gas or fast food","name":"Mobil","addr":"2201 East Coast Hwy, Corona Del Mar, CA 92625","lat":33.60508,"lon":-117.87585},{"kind":"Gas or fast food","name":"Corona Del Mar Chevron Service Station","addr":"2546 Pacific Coast Hwy, Corona Del Mar, CA 92625","lat":33.60343,"lon":-117.87311},{"kind":"Coffee or store","name":"Peet's Coffee","addr":"894 Avocado Ave, Newport Beach, CA 92660","lat":33.60557,"lon":-117.87512}]},{"n":14,"mile":61.63,"name":"Crystal Cove State Park lot","note":"Public restroom at 7408 N Coast Hwy, ocean side of PCH between the Shake Shack and Laguna. Day-use fee if you drive in.","confirm":1,"lat":33.56557,"lon":-117.82829,"baths":[{"kind":"Public restroom","name":"Public restroom","addr":"7408 N Coast Hwy, Newport Beach, CA 92657","lat":33.56554,"lon":-117.82862}]},{"n":15,"mile":65.6,"name":"S Coast Hwy, south of downtown Laguna","note":"Jersey Mike's, 1350 S Coast Hwy, Laguna Beach. Street parking or a side street. No lot here.","confirm":1,"lat":33.53212,"lon":-117.77533,"baths":[{"kind":"Gas or fast food","name":"Jersey Mike's Subs","addr":"1350 S Coast Hwy, Laguna Beach, CA 92651","lat":33.53231,"lon":-117.77526},{"kind":"Gas or fast food","name":"Wahoo's Fish Taco","addr":"1133 Pacific Coast Highway, 1133 S Coast Hwy, Laguna Beach, CA 92651","lat":33.53382,"lon":-117.77705},{"kind":"Coffee or store","name":"Sur Coffee","addr":"1391 S Coast Hwy Unit A, Laguna Beach, CA 92651","lat":33.53184,"lon":-117.77522}]},{"n":16,"mile":68.35,"name":"7-Eleven, 31702 Coast Hwy","note":"31702 Coast Hwy, Laguna Beach, CA 92651. Pull into the lot.","confirm":0,"lat":33.50223,"lon":-117.74417,"baths":[{"kind":"Coffee or store","name":"7-Eleven","addr":"31702 Coast Hwy, Laguna Beach, CA 92651","lat":33.50244,"lon":-117.74403}]},{"n":17,"mile":70.8,"name":"Salt Creek Beach lot, Dana Point","note":"PCH at Ritz Carlton Dr. Public lot at 33333 Pacific Coast Hwy with bathrooms.","confirm":0,"lat":33.47587,"lon":-117.71675,"baths":[{"kind":"Public restroom","name":"Public restroom","addr":"Parking lot, 33333 Pacific Coast Hwy, Dana Point, CA 92629","lat":33.477,"lon":-117.71895},{"kind":"Coffee or store","name":"Moulin","addr":"2 Ritz Carlton Dr, Dana Point, CA 92629","lat":33.47595,"lon":-117.7171}]},{"n":18,"mile":73.22,"name":"ampm, 34342 Pacific Coast Hwy","note":"34342 Pacific Coast Hwy, Dana Point, CA 92629. Pull into the lot.","confirm":0,"lat":33.46433,"lon":-117.68508,"baths":[{"kind":"Public restroom","name":"Public restroom","addr":"25300 Dana Point Harbor Dr, Dana Point, CA 92629","lat":33.46383,"lon":-117.68655},{"kind":"Gas or fast food","name":"ARCO","addr":"34338 Pacific Coast Hwy, Dana Point, CA 92629","lat":33.46461,"lon":-117.68495},{"kind":"Gas or fast food","name":"Chevron Dana Point","addr":"34306 CA-1, Dana Point, CA 92629","lat":33.46533,"lon":-117.68769}]},{"n":19,"mile":76.07,"name":"Berri Brothers gas, San Clemente","note":"2749 N El Camino Real, San Clemente. Where Coast Hwy becomes El Camino Real.","confirm":0,"lat":33.44124,"lon":-117.64493,"baths":[{"kind":"Gas or fast food","name":"Berri Brothers","addr":"2749 N El Camino Real, San Clemente, CA 92672","lat":33.4415,"lon":-117.64469}]},{"n":20,"mile":78.85,"name":"7-Eleven, 1118 S El Camino Real","note":"1118 S El Camino Real, San Clemente, CA 92672. Pull into the lot.","confirm":0,"lat":33.42025,"lon":-117.60759,"baths":[{"kind":"Gas or fast food","name":"Sancho's Tacos","addr":"1101 S El Camino Real, San Clemente, CA 92672","lat":33.42105,"lon":-117.60779},{"kind":"Grocery","name":"Ralphs","addr":"903 S El Camino Real, San Clemente, CA 92672","lat":33.42284,"lon":-117.60867},{"kind":"Coffee or store","name":"7-Eleven","addr":"1118 S El Camino Real, San Clemente, CA 92672","lat":33.42033,"lon":-117.60812}]},{"n":21,"mile":80.85,"name":"San Mateo Point","note":"End of Avenida del Presidente, San Clemente. Team photo, then everyone gets in the van.","confirm":0,"lat":33.39485,"lon":-117.59411,"baths":[]},{"n":22,"mile":83.64,"name":"Bob's Gas, S Coast Hwy","note":"1742 S Coast Hwy, Oceanside. Gas station on the route.","confirm":0,"lat":33.1752,"lon":-117.36218,"baths":[{"kind":"Public restroom","name":"Public restroom","addr":"S Coast Hwy, Oceanside, CA 92054","lat":33.17379,"lon":-117.36152},{"kind":"Gas or fast food","name":"Bob's Gas","addr":"1742 S Coast Hwy #5320, Oceanside, CA 92054","lat":33.17542,"lon":-117.36213},{"kind":"Gas or fast food","name":"ENERGY PRODUCTS AND SE","addr":"1742 S Coast Hwy, Oceanside, CA 92054","lat":33.17571,"lon":-117.36208}]},{"n":23,"mile":86.65,"name":"Carlsbad Blvd beach parking","note":"4653 Carlsbad Blvd, Carlsbad. Roadside beach parking with a porta potty.","confirm":0,"lat":33.13767,"lon":-117.33857,"baths":[{"kind":"Public restroom","name":"Public restroom","addr":"4653 Carlsbad Blvd, Carlsbad, CA 92008","lat":33.13768,"lon":-117.33874}]},{"n":24,"mile":88.5,"name":"Carlsbad Blvd at Solamar Dr","note":"By the Hilton Garden Inn, 6450 Carlsbad Blvd. Pull into the side street.","confirm":1,"lat":33.11399,"lon":-117.32411,"baths":[]},{"n":25,"mile":91.12,"name":"7-Eleven, 1766 N Coast Hwy 101","note":"1766 N Coast Hwy 101, Encinitas, CA 92024. Pull into the lot.","confirm":0,"lat":33.07926,"lon":-117.30729,"baths":[{"kind":"Gas or fast food","name":"7 Eleven","addr":"1766 N Coast Hwy 101, Encinitas, CA 92024","lat":33.07919,"lon":-117.30759},{"kind":"Coffee or store","name":"7-Eleven","addr":"1766 N Coast Hwy 101, Encinitas, CA 92024","lat":33.07912,"lon":-117.30747}]},{"n":26,"mile":92.66,"name":"Pannikin Coffee, Leucadia","note":"510 N Coast Hwy 101, Encinitas. Coffee shop with its own lot.","confirm":0,"lat":33.05822,"lon":-117.29929,"baths":[{"kind":"Coffee or store","name":"Pannikin Coffee & Tea","addr":"510 N Coast Hwy 101, Encinitas, CA 92024","lat":33.0583,"lon":-117.29965}]},{"n":27,"mile":94.2,"name":"S Coast Hwy 101 near Swami's","note":"Surfdog's Java Hut, 1126 S Coast Hwy 101, Encinitas. Street parking on the 101.","confirm":0,"lat":33.03764,"lon":-117.29283,"baths":[{"kind":"Coffee or store","name":"Surfdog's Java Hut","addr":"1126 S Coast Hwy 101, Encinitas, CA 92024","lat":33.03753,"lon":-117.29285},{"kind":"Coffee or store","name":"GOODONYA Market + Wine Shop","addr":"1050 S Coast Hwy 101, Encinitas, CA 92024","lat":33.03855,"lon":-117.29249},{"kind":"Coffee or store","name":"GOODONYA Organic Eatery","addr":"1051 S Coast Hwy 101, Encinitas, CA 92024","lat":33.03849,"lon":-117.29265}]},{"n":28,"mile":97.56,"name":"Hwy 101, Solana Beach","note":"153 N Hwy 101, Solana Beach, near Lomas Santa Fe Dr. Street parking on the 101.","confirm":0,"lat":32.99308,"lon":-117.27213,"baths":[{"kind":"Coffee or store","name":"Gelato 101 Solana Beach","addr":"153 N Hwy 101 Ste 101, Solana Beach, CA 92075","lat":32.9932,"lon":-117.27232},{"kind":"Coffee or store","name":"Claire's Too","addr":"250 N Cedros Ave, Solana Beach, CA 92075","lat":32.99513,"lon":-117.27107},{"kind":"Coffee or store","name":"KAFE'SITO","addr":"161 S Hwy 101, Solana Beach, CA 92075","lat":32.9904,"lon":-117.27167}]},{"n":29,"mile":99.98,"name":"Powerhouse Park, Del Mar","note":"Camino del Mar at 15th St. Public restrooms at the park on Coast Blvd.","confirm":0,"lat":32.95949,"lon":-117.26533,"baths":[{"kind":"Public restroom","name":"Public restroom","addr":"Coast Blvd, Del Mar, CA 92014","lat":32.9595,"lon":-117.2657},{"kind":"Grocery","name":"Valley Farm Market Del Mar","addr":"1555 Camino Del Mar Spc 107, Del Mar, CA 92014","lat":32.96037,"lon":-117.26509},{"kind":"Gas or fast food","name":"Board & Brew","addr":"1212 Camino Del Mar #2506, Del Mar, CA 92014","lat":32.95677,"lon":-117.26456}]},{"n":30,"mile":102.58,"name":"Torrey Pines South Beach lot","note":"12600 N Torrey Pines Rd. Public restrooms. Last stop before the climb.","confirm":0,"lat":32.92762,"lon":-117.25867,"baths":[{"kind":"Public restroom","name":"Public restroom","addr":"South Beach Lot, 12600 N Torrey Pines Rd, La Jolla, CA 92037","lat":32.927,"lon":-117.2593}]},{"n":31,"mile":104.5,"name":"Top of Torrey Pines grade","note":"Torrey Pines Golf Course and Lodge entrance area, N Torrey Pines Rd. Pull into a side road, not the shoulder.","confirm":1,"lat":32.90445,"lon":-117.24339,"baths":[]},{"n":32,"mile":106.61,"name":"La Jolla Shores Dr turn","note":"N Torrey Pines Rd at La Jolla Shores Dr, by UCSD. Van turns right and stops on La Jolla Shores Dr.","confirm":1,"lat":32.87554,"lon":-117.24375,"baths":[]},{"n":33,"mile":107.67,"name":"Scripps, Biological Grade","note":"La Jolla Shores Dr at Biological Grade. Street parking near Scripps.","confirm":1,"lat":32.86714,"lon":-117.25218,"baths":[{"kind":"Coffee or store","name":"Pinpoint Cafe","addr":"8755 Biological Grade, La Jolla, CA 92037","lat":32.86714,"lon":-117.2528}]},{"n":34,"mile":108.63,"name":"La Jolla Shores Dr at Avenida de la Playa","note":"The Corner Mercantile, 8080 La Jolla Shores Dr. Beach restrooms at Kellogg Park two blocks west.","confirm":0,"lat":32.85352,"lon":-117.25381,"baths":[{"kind":"Gas or fast food","name":"Subway","addr":"2206 Torrey Pines Rd, La Jolla, CA 92037","lat":32.85103,"lon":-117.25386},{"kind":"Coffee or store","name":"Shorehouse Kitchen","addr":"2236 Avenida De La Playa, La Jolla, CA 92037","lat":32.85401,"lon":-117.25461},{"kind":"Coffee or store","name":"Starbucks Coffee Company","addr":"2206 Torrey Pines Rd, La Jolla, CA 92037","lat":32.85116,"lon":-117.25387}]},{"n":35,"mile":110.12,"name":"Girard Ave, La Jolla Village","note":"Pavilions and Starbucks, 7544 Girard Ave. Lot and street parking.","confirm":0,"lat":32.84176,"lon":-117.27291,"baths":[{"kind":"Grocery","name":"Pavilions","addr":"7544 Girard Ave, La Jolla, CA 92037","lat":32.84175,"lon":-117.27366},{"kind":"Coffee or store","name":"Starbucks Coffee Company","addr":"7544 Girard Ave, La Jolla, CA 92037","lat":32.84195,"lon":-117.27328},{"kind":"Coffee or store","name":"Harry's Coffee Shop","addr":"7545 Girard Ave, La Jolla, CA 92037","lat":32.84141,"lon":-117.27259}]},{"n":36,"mile":111.16,"name":"La Jolla Blvd at Nautilus St","note":"Valley Farm Market, 6902 La Jolla Blvd. Street parking.","confirm":0,"lat":32.83182,"lon":-117.27661,"baths":[{"kind":"Grocery","name":"Valley Farm Market La Jolla","addr":"6902 La Jolla Blvd, La Jolla, CA 92037","lat":32.83199,"lon":-117.27697},{"kind":"Coffee or store","name":"Immersion Coffee","addr":"6905 La Jolla Blvd, La Jolla, CA 92037","lat":32.83203,"lon":-117.27653},{"kind":"Coffee or store","name":"7-Eleven","addr":"6953 La Jolla Blvd, La Jolla, CA 92037","lat":32.83286,"lon":-117.27654}]},{"n":37,"mile":112.38,"name":"Bird Rock","note":"La Jolla Blvd at Bird Rock Ave. Street parking in the village.","confirm":0,"lat":32.81554,"lon":-117.27074,"baths":[{"kind":"Coffee or store","name":"DODO BIRD Donuts","addr":"369 Bird Rock Ave, La Jolla, CA 92037","lat":32.81544,"lon":-117.27097},{"kind":"Coffee or store","name":"Sun Gold Point Diner","addr":"5632 La Jolla Blvd, La Jolla, CA 92037","lat":32.81453,"lon":-117.27025},{"kind":"Coffee or store","name":"Bird Rock Coffee Roasters","addr":"5627 La Jolla Blvd, La Jolla, CA 92037","lat":32.81447,"lon":-117.26976}]},{"n":38,"mile":114.06,"name":"Mission Blvd at Garnet Ave","note":"Runner turns left onto Garnet. Busy bar district at night, van stops on a side street.","confirm":1,"lat":32.79656,"lon":-117.25551,"baths":[{"kind":"Public restroom","name":"Public restroom","addr":"Pacific Beach boardwalk area, San Diego, CA 92109","lat":32.7971,"lon":-117.2563},{"kind":"Coffee or store","name":"Trident Coffee Pacific Beach","addr":"4462 Mission Blvd Ste 102, San Diego, CA 92109","lat":32.79578,"lon":-117.25543},{"kind":"Coffee or store","name":"Pacific Bean Coffee","addr":"712 Garnet Ave, San Diego, CA 92109","lat":32.7966,"lon":-117.25637}]},{"n":39,"mile":115.26,"name":"Finish: Milestone Running Shop","note":"1892 Garnet Ave, San Diego. Anyone who wants to joins the last leg.","confirm":0,"lat":32.80093,"lon":-117.23561,"baths":[{"kind":"Gas or fast food","name":"Jack in the Box","addr":"1905 Garnet Ave, San Diego, CA 92109","lat":32.80088,"lon":-117.23492},{"kind":"Gas or fast food","name":"Roberto\u2019s Taco Shop","addr":"1858 Garnet Ave, San Diego, CA 92109","lat":32.80174,"lon":-117.23636},{"kind":"Coffee or store","name":"Better Buzz Coffee Pacific Beach East","addr":"1909 Garnet Ave, San Diego, CA 92109","lat":32.80093,"lon":-117.23457}]}],"legs":[{"n":1,"runner":0,"round":1,"start":0,"end":1,"after":false,"m0":0.0,"m1":4.33,"dist":4.33,"eta":"5:00 AM","eta_lo":"5:00 AM","eta_hi":"5:00 AM","dark":true,"cues":[{"mile":0.0,"text":"Right on Ocean Ave"},{"mile":0.4,"text":"Left on Pico Blvd"},{"mile":0.5,"text":"Right on Main St"},{"mile":1.9,"text":"Left on Abbot Kinney Blvd"},{"mile":3.2,"text":"Left on Washington Blvd"},{"mile":4.3,"text":"Fork right onto West Washington Blvd"}],"note":"Wear the race kit (tank and hat) for the start.","van":"Follow the race route to the next handoff.","zone":""},{"n":2,"runner":1,"round":1,"start":1,"end":2,"after":false,"m0":4.33,"m1":8.79,"dist":4.46,"eta":"5:41 AM","eta_lo":"5:39 AM","eta_hi":"5:45 AM","dark":true,"cues":[{"mile":0.8,"text":"Right on Inglewood Blvd"},{"mile":1.6,"text":"Left on Culver Dr"},{"mile":1.8,"text":"Right on Mesmer Ave"},{"mile":2.6,"text":"Left on W Centinela Ave"},{"mile":2.8,"text":"Right on Sepulveda Blvd"},{"mile":3.6,"text":"Left on W 78th St"}],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":3,"runner":2,"round":1,"start":2,"end":3,"after":false,"m0":8.79,"m1":12.33,"dist":3.54,"eta":"6:24 AM","eta_lo":"6:19 AM","eta_hi":"6:32 AM","dark":true,"cues":[{"mile":0.0,"text":"Road becomes W 79th St"},{"mile":0.5,"text":"Right on Isis Ave"},{"mile":0.6,"text":"Left on W 83rd St"},{"mile":0.8,"text":"Right on La Cienega Blvd"},{"mile":1.0,"text":"Left on Manchester Blvd"}],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":4,"runner":3,"round":1,"start":3,"end":4,"after":false,"m0":12.33,"m1":16.48,"dist":4.15,"eta":"6:57 AM","eta_lo":"6:51 AM","eta_hi":"7:09 AM","dark":false,"cues":[{"mile":4.0,"text":"Manchester becomes Firestone Blvd"}],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":5,"runner":4,"round":1,"start":4,"end":5,"after":false,"m0":16.48,"m1":24.24,"dist":7.76,"eta":"7:37 AM","eta_lo":"7:28 AM","eta_hi":"7:53 AM","dark":false,"cues":[{"mile":4.1,"text":"Right on Atlantic Ave"}],"note":"One longer block of 7.8 miles in daylight, then he sits out round 2. Straight on Firestone Blvd for 4.1 miles, right on Atlantic Ave, then the handoff is at the Rosecrans corner.","van":"Leapfrog Dougie with water every 2 to 3 miles. Easy lots on the way: Chevron at 4201 Firestone Blvd (3.4 mi in) and 7-Eleven at 11400 Atlantic Ave (6.5 mi in).","zone":""},{"n":6,"runner":5,"round":1,"start":5,"end":6,"after":false,"m0":24.24,"m1":29.17,"dist":4.93,"eta":"8:50 AM","eta_lo":"8:38 AM","eta_hi":"9:15 AM","dark":false,"cues":[{"mile":0.0,"text":"Left on Rosecrans Ave and cross the river"},{"mile":0.7,"text":"Right onto the LA River trail on the east bank, head south"}],"note":"Carry your phone. Rosecrans crosses the river first. Turn right onto the path on the east bank and follow it south for 4.2 miles to the Del Amo Blvd bridge. The van cannot reach you in between.","van":"The van cannot follow the trail. Take I-710 south to the Del Amo Blvd exit, head east over the river, turn right on Oregon Ave and park on the street. Walk the next runner to the bike path entrance on Del Amo Blvd. Optional check-in on the way: Ralph C. Dills Park, 6500 San Juan St, Paramount, beside the trail about 2 miles in.","zone":"River trail"},{"n":7,"runner":6,"round":1,"start":6,"end":7,"after":false,"m0":29.17,"m1":33.17,"dist":4.0,"eta":"9:37 AM","eta_lo":"9:23 AM","eta_hi":"10:06 AM","dark":false,"cues":[{"mile":3.9,"text":"Stay on the trail until it passes under PCH"},{"mile":3.9,"text":"Take the first bike path exit after PCH (Ocean Blue Environmental)"}],"note":"Carry your phone. All trail, 4 miles, east bank the whole way, past Wardlow Rd and Willow St. Go under the PCH bridge and take the first exit to the van. Trail reviews report encampments south of Willow St, so keep moving on the last mile.","van":"The van cannot follow the trail. Drive around to the bike path exit by Ocean Blue Environmental, just south of PCH on the east side of the river. Wardlow Rd and Willow St both cross the trail on the way if you want eyes on the runner.","zone":"River trail"},{"n":8,"runner":7,"round":1,"start":7,"end":8,"after":false,"m0":33.17,"m1":37.33,"dist":4.16,"eta":"10:15 AM","eta_lo":"9:59 AM","eta_hi":"10:48 AM","dark":false,"cues":[{"mile":0.1,"text":"Pick up Pacific Coast Hwy heading east"},{"mile":3.4,"text":"Careful at the traffic circle, stay on PCH"}],"note":"Take care at the traffic circle about 3.4 mi in. Stay on PCH.","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":9,"runner":0,"round":2,"start":8,"end":9,"after":false,"m0":37.33,"m1":40.91,"dist":3.58,"eta":"10:55 AM","eta_lo":"10:36 AM","eta_hi":"11:32 AM","dark":false,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":10,"runner":1,"round":2,"start":9,"end":10,"after":false,"m0":40.91,"m1":45.25,"dist":4.34,"eta":"11:29 AM","eta_lo":"11:08 AM","eta_hi":"12:10 PM","dark":false,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":11,"runner":2,"round":2,"start":10,"end":11,"after":false,"m0":45.25,"m1":49.0,"dist":3.75,"eta":"12:10 PM","eta_lo":"11:47 AM","eta_hi":"12:55 PM","dark":false,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":12,"runner":3,"round":2,"start":11,"end":12,"after":false,"m0":49.0,"m1":53.63,"dist":4.63,"eta":"12:46 PM","eta_lo":"12:21 PM","eta_hi":"1:34 PM","dark":false,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":13,"runner":5,"round":2,"start":12,"end":13,"after":false,"m0":53.63,"m1":57.65,"dist":4.02,"eta":"1:29 PM","eta_lo":"1:03 PM","eta_hi":"2:23 PM","dark":false,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":14,"runner":6,"round":2,"start":13,"end":14,"after":false,"m0":57.65,"m1":61.63,"dist":3.98,"eta":"2:08 PM","eta_lo":"1:39 PM","eta_hi":"3:05 PM","dark":false,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":15,"runner":7,"round":2,"start":14,"end":15,"after":false,"m0":61.63,"m1":65.6,"dist":3.97,"eta":"2:45 PM","eta_lo":"2:15 PM","eta_hi":"3:47 PM","dark":false,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":16,"runner":0,"round":3,"start":15,"end":16,"after":false,"m0":65.6,"m1":68.35,"dist":2.75,"eta":"3:23 PM","eta_lo":"2:50 PM","eta_hi":"4:29 PM","dark":false,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":17,"runner":1,"round":3,"start":16,"end":17,"after":false,"m0":68.35,"m1":70.8,"dist":2.45,"eta":"3:49 PM","eta_lo":"3:15 PM","eta_hi":"4:58 PM","dark":false,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":18,"runner":2,"round":3,"start":17,"end":18,"after":false,"m0":70.8,"m1":73.22,"dist":2.42,"eta":"4:13 PM","eta_lo":"3:37 PM","eta_hi":"5:23 PM","dark":false,"cues":[{"mile":1.0,"text":"Right on Del Prado Ave"},{"mile":1.5,"text":"Right on Golden Lantern"},{"mile":1.9,"text":"Left on Dana Point Harbor Dr"},{"mile":2.2,"text":"Right on Park Lantern"}],"note":"Most turns of the day, through Dana Point. Read the cues before you start.","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":19,"runner":3,"round":3,"start":18,"end":19,"after":false,"m0":73.22,"m1":76.07,"dist":2.85,"eta":"4:36 PM","eta_lo":"3:59 PM","eta_hi":"5:49 PM","dark":false,"cues":[{"mile":0.0,"text":"Fork right toward Coast Hwy"}],"note":"","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":20,"runner":4,"round":3,"start":19,"end":20,"after":false,"m0":76.07,"m1":78.85,"dist":2.78,"eta":"5:03 PM","eta_lo":"4:25 PM","eta_hi":"6:19 PM","dark":false,"cues":[{"mile":-0.0,"text":"Road becomes El Camino Real"}],"note":"","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":21,"runner":5,"round":3,"start":20,"end":21,"after":false,"m0":78.85,"m1":80.85,"dist":2.0,"eta":"5:29 PM","eta_lo":"4:50 PM","eta_hi":"6:48 PM","dark":false,"cues":[{"mile":0.2,"text":"Right on Avenida Valencia"},{"mile":0.2,"text":"Left on Avenida del Presidente"},{"mile":2.0,"text":"Stop at San Mateo Point for the team photo"}],"note":"Ends at San Mateo Point. Team photo, then everyone rides in the van.","van":"Follow the race route to the next handoff.","zone":"Coast Hwy"},{"n":22,"runner":6,"round":3,"start":21,"end":22,"after":true,"m0":80.85,"m1":83.64,"dist":2.79,"eta":"6:28 PM","eta_lo":"5:48 PM","eta_hi":"7:49 PM","dark":true,"cues":[{"mile":0.0,"text":"Start again at the Chevron, 1601 N Coast Hwy, Oceanside"},{"mile":0.1,"text":"Follow Coast Hwy south"}],"note":"Starts at the Chevron in Oceanside after the I-5 drive.","van":"Follow the race route to the next handoff.","zone":""},{"n":23,"runner":7,"round":3,"start":22,"end":23,"after":false,"m0":83.64,"m1":86.65,"dist":3.01,"eta":"6:55 PM","eta_lo":"6:13 PM","eta_hi":"8:18 PM","dark":true,"cues":[{"mile":0.4,"text":"Road becomes Carlsbad Blvd"}],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":24,"runner":0,"round":4,"start":23,"end":24,"after":false,"m0":86.65,"m1":88.5,"dist":1.85,"eta":"7:23 PM","eta_lo":"6:40 PM","eta_hi":"8:50 PM","dark":true,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":25,"runner":1,"round":4,"start":24,"end":25,"after":false,"m0":88.5,"m1":91.12,"dist":2.62,"eta":"7:41 PM","eta_lo":"6:56 PM","eta_hi":"9:09 PM","dark":true,"cues":[{"mile":2.4,"text":"Road becomes Coast Hwy 101"}],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":26,"runner":2,"round":4,"start":25,"end":26,"after":false,"m0":91.12,"m1":92.66,"dist":1.54,"eta":"8:06 PM","eta_lo":"7:20 PM","eta_hi":"9:37 PM","dark":true,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":27,"runner":3,"round":4,"start":26,"end":27,"after":false,"m0":92.66,"m1":94.2,"dist":1.54,"eta":"8:20 PM","eta_lo":"7:34 PM","eta_hi":"9:53 PM","dark":true,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":28,"runner":4,"round":4,"start":27,"end":28,"after":false,"m0":94.2,"m1":97.56,"dist":3.36,"eta":"8:35 PM","eta_lo":"7:48 PM","eta_hi":"10:09 PM","dark":true,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":29,"runner":5,"round":4,"start":28,"end":29,"after":false,"m0":97.56,"m1":99.98,"dist":2.42,"eta":"9:07 PM","eta_lo":"8:18 PM","eta_hi":"10:44 PM","dark":true,"cues":[{"mile":0.9,"text":"Right on Camino del Mar"}],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":30,"runner":6,"round":4,"start":29,"end":30,"after":false,"m0":99.98,"m1":102.58,"dist":2.6,"eta":"9:30 PM","eta_lo":"8:40 PM","eta_hi":"11:10 PM","dark":true,"cues":[{"mile":1.4,"text":"Right on N Torrey Pines Rd"}],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":31,"runner":7,"round":4,"start":30,"end":31,"after":false,"m0":102.58,"m1":104.5,"dist":1.92,"eta":"9:55 PM","eta_lo":"9:03 PM","eta_hi":"11:37 PM","dark":true,"cues":[],"note":"The Torrey Pines climb. It runs long because the van should not stop on the grade.","van":"Do not stop on the Torrey Pines grade. Drive ahead to the handoff and wait.","zone":""},{"n":32,"runner":0,"round":5,"start":31,"end":32,"after":false,"m0":104.5,"m1":106.61,"dist":2.11,"eta":"10:13 PM","eta_lo":"9:20 PM","eta_hi":"11:57 PM","dark":true,"cues":[{"mile":0.9,"text":"Turn right to stay on N Torrey Pines Rd"}],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":33,"runner":1,"round":5,"start":32,"end":33,"after":false,"m0":106.61,"m1":107.67,"dist":1.06,"eta":"10:33 PM","eta_lo":"9:39 PM","eta_hi":"12:19 AM","dark":true,"cues":[{"mile":0.0,"text":"Right on La Jolla Shores Dr"}],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":34,"runner":2,"round":5,"start":33,"end":34,"after":false,"m0":107.67,"m1":108.63,"dist":0.96,"eta":"10:43 PM","eta_lo":"9:49 PM","eta_hi":"12:31 AM","dark":true,"cues":[],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":35,"runner":3,"round":5,"start":34,"end":35,"after":false,"m0":108.63,"m1":110.12,"dist":1.49,"eta":"10:52 PM","eta_lo":"9:58 PM","eta_hi":"12:41 AM","dark":true,"cues":[{"mile":0.2,"text":"Right on Torrey Pines Rd"}],"note":"Torrey Pines Rd is busy with few safe places to stop, so this one runs long.","van":"Do not stop on Torrey Pines Rd. Drive ahead to Girard Ave.","zone":""},{"n":36,"runner":4,"round":5,"start":35,"end":36,"after":false,"m0":110.12,"m1":111.16,"dist":1.04,"eta":"11:06 PM","eta_lo":"10:11 PM","eta_hi":"12:56 AM","dark":true,"cues":[{"mile":0.0,"text":"Left on Girard Ave"},{"mile":0.1,"text":"Right on Pearl St"},{"mile":0.2,"text":"Left on Fay Ave"},{"mile":0.7,"text":"Right on Nautilus St"}],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":37,"runner":5,"round":5,"start":36,"end":37,"after":false,"m0":111.16,"m1":112.38,"dist":1.22,"eta":"11:16 PM","eta_lo":"10:20 PM","eta_hi":"1:07 AM","dark":true,"cues":[{"mile":0.0,"text":"Left on La Jolla Blvd"}],"note":"","van":"Follow the race route to the next handoff.","zone":""},{"n":38,"runner":6,"round":5,"start":37,"end":38,"after":false,"m0":112.38,"m1":114.06,"dist":1.68,"eta":"11:28 PM","eta_lo":"10:31 PM","eta_hi":"1:20 AM","dark":true,"cues":[{"mile":1.1,"text":"Right on Mission Blvd"}],"note":"","van":"Pacific Beach is busy late on a Friday. Stop on a side street, not on Garnet.","zone":""},{"n":39,"runner":7,"round":5,"start":38,"end":39,"after":false,"m0":114.06,"m1":115.26,"dist":1.2,"eta":"11:44 PM","eta_lo":"10:47 PM","eta_hi":"1:38 AM","dark":true,"cues":[{"mile":0.0,"text":"Left on Garnet Ave"},{"mile":1.2,"text":"Finish at Milestone Running Shop"}],"note":"Open to the whole team. Anyone who wants to can jump out and run the last 1.2 miles to the shop with Maco.","van":"Drop off everyone who wants to run the last leg, then park near the shop and meet them at the finish.","zone":""}],"chevron":{"name":"Chevron, Oceanside","note":"1601 N Coast Hwy, Oceanside.","lat":33.20923,"lon":-117.38724,"baths":[{"kind":"Gas or fast food","name":"Chevron","addr":"1601 N Coast Hwy Chevron, Oceanside, CA 92054","lat":33.20924,"lon":-117.3874}]},"totals":[14.62,14.93,12.21,14.66,14.94,14.59,15.05,14.26],"total":115.26,"svg":{"w":864.8,"h":1000.0,"legs":["0.0,0.1 1.1,0.9 2.3,2.0 3.2,3.1 4.0,3.1 4.9,4.2 5.8,5.2 6.6,6.1 7.7,7.4 8.9,8.9 10.1,10.3 11.1,11.5 12.0,12.6 13.0,14.0 14.1,15.3 15.4,15.7 17.2,16.2 18.8,16.7 20.3,17.1 21.8,17.9 23.2,18.9 24.6,19.3 25.9,19.1 27.5,19.0 28.8,18.9 30.0,18.7 31.3,17.9 32.6,17.2 33.8,16.4 35.1,15.7 36.4,14.8 37.6,14.2 38.9,13.4 40.0,12.8 41.0,12.2 41.4,12.0","41.4,12.0 42.8,12.1 43.9,12.0 45.2,12.0 46.0,11.9 47.5,11.7 48.7,11.5 50.3,11.4 51.7,12.5 53.1,13.5 54.3,14.5 55.3,15.3 56.3,16.5 57.3,17.6 58.7,17.2 60.0,17.3 61.4,18.4 62.6,19.1 63.7,20.0 64.8,21.0 65.7,22.2 66.4,23.2 67.6,24.1 68.9,25.1 69.3,26.7 69.5,28.3 69.4,29.8 69.1,31.2 68.9,32.5 68.5,34.1 70.1,34.4 71.8,34.8 73.4,35.0 74.6,34.3 75.9,34.6 77.5,35.0 77.9,35.3","77.9,35.3 78.8,36.4 79.8,37.1 80.7,37.8 81.9,38.4 82.3,39.4 83.7,39.4 85.2,39.4 85.8,40.4 86.7,41.0 88.3,40.9 90.1,40.9 91.9,40.9 93.7,40.8 95.5,40.8 97.2,40.8 98.7,40.8 100.2,40.8 101.4,41.6 102.3,42.4 103.4,42.5 104.7,42.3 106.2,42.3 107.8,42.4 109.2,42.4 111.0,42.3 112.6,42.3 114.1,42.3 115.6,42.3 116.3,42.3","116.3,42.3 118.1,42.3 119.9,42.3 121.5,42.3 122.9,42.3 124.3,42.3 126.1,42.3 127.9,42.3 129.8,42.3 131.6,42.3 133.5,42.3 135.0,42.3 136.4,42.3 137.9,42.3 139.4,42.2 140.9,42.2 142.6,42.2 144.5,42.2 146.4,42.2 147.9,42.2 149.4,42.2 150.9,42.2 152.4,42.2 153.9,42.1 155.3,42.2 157.1,42.1 158.6,42.2 160.0,42.2 161.5,42.1 162.9,42.1 164.6,42.1 166.0,42.1","166.0,42.1 167.4,42.2 169.1,42.2 170.8,42.1 172.6,42.1 174.5,42.2 176.3,42.2 178.2,42.2 179.7,42.4 180.4,43.4 181.3,44.1 182.6,44.6 183.9,45.0 185.3,45.4 187.0,45.7 188.7,45.9 190.2,46.1 191.6,46.3 193.0,46.4 194.5,46.6 195.9,46.8 197.3,47.0 198.8,47.1 200.2,47.3 201.6,47.5 203.1,47.6 204.8,47.8 206.5,48.0 208.2,48.3 209.9,48.5 211.4,48.6 213.0,48.8 214.2,49.2 214.7,50.7 215.2,52.4 215.8,53.8 215.8,55.5 215.5,56.9 215.3,58.5 214.8,59.6 214.3,60.6 214.1,62.1 214.1,63.6 214.5,64.6 214.1,66.0 213.6,67.4 213.1,68.9 212.5,70.4 212.0,71.9 211.6,73.2 211.1,74.8 210.6,76.1 210.0,77.6 209.5,79.3 209.1,80.7 208.6,82.0 208.2,83.3 207.7,84.7 207.2,86.1 206.8,87.4 206.8,88.7","206.8,88.7 208.3,88.7 210.0,88.7 211.6,88.7 213.4,88.7 215.2,88.7 214.7,89.5 214.0,90.3 213.2,91.5 212.8,93.1 212.6,94.2 212.4,95.9 212.1,97.5 211.9,99.2 211.6,100.8 211.5,102.3 211.3,103.7 211.2,105.1 211.0,106.7 210.6,108.4 210.5,110.0 210.2,111.4 209.8,113.0 209.4,114.5 208.6,116.1 207.8,117.7 207.0,119.2 206.2,120.7 205.4,122.3 204.6,123.8 203.9,125.3 203.2,126.5 202.4,128.0 201.7,129.5 201.3,130.9 201.1,132.7 201.0,134.5 200.8,135.7","200.8,135.7 200.9,137.1 200.8,138.8 200.7,140.2 200.6,141.7 200.4,143.2 200.3,144.9 200.1,146.6 199.9,148.0 199.8,149.7 199.6,151.4 199.5,152.9 199.4,154.2 199.4,155.7 199.4,157.4 199.4,158.7 199.4,160.2 199.4,161.7 199.4,163.1 199.4,164.6 199.4,166.1 199.4,167.7 199.5,169.1 199.5,170.6 199.6,172.1 199.6,173.6 199.6,175.1 199.6,176.5 199.6,178.0 199.6,179.4 199.6,180.8 199.6,182.4 200.4,182.4","200.4,182.4 201.2,182.3 203.0,182.3 204.9,182.3 206.8,182.3 208.7,182.3 210.6,182.3 212.4,182.3 214.3,182.3 216.0,182.3 217.4,182.3 219.1,182.3 220.7,182.3 222.5,182.3 224.4,182.3 226.2,182.3 228.1,182.3 229.5,182.3 231.0,182.3 232.4,182.3 233.9,182.3 235.4,182.3 236.8,182.3 238.3,182.3 239.7,182.3 241.2,182.4 242.3,182.8 243.5,183.5 244.6,184.4 245.6,185.3 246.8,186.3 247.8,187.2 248.1,187.4","248.1,187.4 249.2,188.5 250.6,189.7 252.0,191.0 253.4,192.2 254.8,193.5 255.7,194.3 256.8,195.3 257.8,196.2 258.6,197.3 259.1,198.9 259.6,200.5 260.0,201.9 260.6,203.5 261.1,204.8 261.9,206.3 262.8,207.4 263.7,208.6 264.6,209.8 265.6,211.0 266.6,212.3 267.1,213.5 267.3,214.5 267.3,216.1 267.5,217.6 268.4,218.9 269.6,219.7 271.0,220.6 271.6,220.9","271.6,220.9 273.0,221.8 274.2,222.5 275.5,223.2 276.8,223.8 278.1,224.5 279.4,225.3 280.4,226.4 281.0,227.7 281.5,229.2 282.0,230.8 282.4,232.0 283.2,233.2 284.1,234.1 285.1,235.2 286.3,236.0 287.2,236.7 288.2,237.9 289.1,239.1 290.3,240.3 291.5,241.5 292.7,242.7 293.8,243.8 294.9,244.9 296.0,246.1 297.0,247.2 297.9,248.5 298.9,249.8 300.0,251.0 301.3,252.3 302.3,253.4 303.3,254.5 304.5,256.0 305.6,257.5 306.0,258.0","306.0,258.0 307.2,259.4 308.3,260.9 309.5,262.4 310.6,263.9 311.8,265.4 312.9,266.7 314.1,268.2 315.3,269.7 316.3,271.0 317.3,272.2 318.5,273.4 319.6,274.6 320.9,275.9 322.2,277.3 323.6,278.6 324.9,279.8 326.2,280.9 327.5,282.1 328.8,283.2 330.1,284.2 331.3,285.3 332.4,286.2 333.5,287.2 334.6,288.1 335.9,289.3 336.9,290.1","336.9,290.1 338.2,291.3 339.3,292.2 340.4,293.2 341.9,294.2 343.4,295.2 344.7,296.2 346.0,297.1 347.2,298.0 348.3,298.9 349.5,299.9 350.9,300.9 352.3,301.8 353.8,302.8 355.2,303.9 356.6,304.8 358.0,305.8 359.4,306.7 360.7,307.3 362.0,308.0 363.4,308.8 364.6,309.6 365.7,310.5 366.9,311.3 368.1,312.2 369.2,313.1 370.4,313.9 371.7,314.8 373.1,315.8 374.4,316.7 375.7,317.6 377.3,317.9 378.8,318.2 380.1,318.8 381.3,319.6 382.6,320.2 382.8,320.2","382.8,320.2 384.3,320.6 386.0,320.9 387.8,321.2 389.1,321.2 390.4,321.2 391.8,321.8 393.1,322.5 394.5,323.3 395.8,324.3 396.9,324.8 398.4,325.2 399.8,325.5 401.1,325.6 401.9,325.8 403.4,325.8 404.2,325.1 405.5,324.8 406.9,325.2 408.1,325.3 409.6,325.8 410.9,326.8 412.1,327.6 413.9,328.0 415.7,328.3 417.3,328.7 418.8,329.0 420.2,329.9 421.3,330.9 422.7,332.0 424.0,333.1 425.3,334.1 425.6,334.4","425.6,334.4 426.6,335.4 427.1,336.7 427.5,338.5 428.0,340.1 428.4,341.4 429.6,342.7 430.9,343.5 432.0,344.2 433.5,345.2 435.1,346.2 436.8,347.2 438.1,348.0 439.2,348.8 440.4,349.9 441.5,350.8 442.8,351.8 443.9,352.8 445.2,353.9 446.5,355.0 447.8,356.1 449.1,357.2 449.9,358.7 450.6,360.3 451.7,361.6 452.8,362.6 453.8,363.6 455.0,364.6 456.2,365.6 457.2,366.5 457.9,367.0","457.9,367.0 459.1,367.8 460.2,368.7 461.2,370.0 462.2,370.8 463.2,371.7 464.1,372.8 465.1,373.8 466.3,374.4 467.7,375.2 469.1,376.2 470.6,377.1 471.8,377.2 473.1,378.0 473.8,379.2 474.9,380.1 476.5,380.8 477.9,381.4 479.2,382.0 480.6,382.6 482.1,383.4 483.6,384.1 485.0,384.7 486.4,385.4 487.9,386.1 488.9,386.6 489.8,387.8 490.6,388.9 491.4,390.2 492.3,391.5 493.0,392.7 493.8,394.0 494.2,394.5","494.2,394.5 495.5,395.8 496.7,397.0 497.9,398.1 499.0,399.2 500.2,400.4 501.4,401.6 502.7,402.9 503.7,403.7 504.6,405.1 505.4,406.2 506.4,407.3 507.4,408.7 508.3,410.0 509.1,411.0 510.2,412.1 511.1,413.4 512.0,414.5 513.1,415.7 514.1,416.9 515.0,418.1 515.6,419.1","515.6,419.1 516.3,420.3 517.3,421.5 518.4,422.3 519.2,423.4 520.0,424.8 520.8,426.0 521.9,426.8 523.1,427.8 524.2,428.7 525.4,429.8 526.4,430.9 527.4,431.8 528.2,432.7 529.2,433.7 530.3,434.8 531.4,436.0 532.6,437.4 533.4,438.7 534.1,439.9 534.5,440.8","534.5,440.8 535.2,442.2 536.1,443.7 537.0,445.3 537.7,446.6 538.4,447.9 539.1,448.9 540.4,449.4 541.7,449.2 542.7,449.4 544.6,449.4 546.3,449.4 547.7,449.3 549.0,450.0 550.1,451.0 550.8,451.7 552.1,451.6 553.5,450.8 554.5,449.8 555.7,450.1 556.2,450.3","556.2,450.3 557.6,450.7 559.3,451.3 560.3,451.9 561.6,452.9 563.1,454.0 564.6,455.1 566.0,456.1 567.4,457.2 568.4,457.8 569.8,458.9 571.2,459.7 572.8,460.5 574.2,461.3 575.6,462.3 577.0,463.3 578.2,464.2 579.2,465.3 580.2,466.3 581.2,467.3 582.2,468.1 583.4,469.0 583.8,469.3","583.8,469.3 585.1,470.2 586.3,471.4 587.7,472.6 589.0,473.9 590.3,475.2 591.4,476.1 592.8,476.3 594.2,476.3 595.6,476.6 597.2,476.8 598.7,476.7 599.8,477.5 600.8,478.1 602.2,478.4 603.8,478.7 604.8,479.2 605.7,480.3 606.7,481.5 607.5,482.7 608.2,484.2 609.0,485.7 609.4,486.6","609.4,486.6 610.4,487.6 610.8,488.5 611.6,489.7 612.2,491.0 612.7,492.3 613.3,493.8 613.8,495.0 614.1,496.3 615.0,497.7 615.7,499.3 616.2,500.5 617.0,502.2 617.7,503.9 618.3,505.5 618.4,507.1 618.7,507.5","760.7,660.3 761.3,661.2 762.0,662.4 762.6,663.8 762.7,665.3 762.8,666.6 763.6,668.0 764.4,669.0 765.4,670.4 766.3,671.7 767.2,673.0 768.1,674.3 769.1,675.7 770.1,677.2 770.8,678.3 771.8,679.6 772.7,680.9 773.6,682.2 774.3,683.2 775.3,684.6 776.3,686.0 777.4,687.6 777.9,688.3","777.9,688.3 779.0,689.8 780.0,691.3 781.1,692.8 782.1,694.3 783.0,695.7 783.2,696.6 783.2,698.0 783.5,699.3 784.3,700.4 785.1,701.7 785.8,703.0 785.6,704.5 786.1,705.8 786.6,706.6 787.4,707.9 788.2,709.2 789.2,710.7 790.0,712.0 791.0,713.3 791.8,714.5 792.5,715.8 793.3,717.4 794.0,719.0 794.1,719.2","794.1,719.2 794.7,720.7 795.4,722.0 796.1,723.1 796.8,724.4 797.6,725.8 798.4,727.1 799.3,728.6 800.2,730.0 801.2,731.5 801.8,732.8 802.4,734.5 803.1,736.2 803.6,737.7 804.0,738.7","804.0,738.7 804.8,740.0 805.4,741.5 805.9,743.1 806.4,744.5 807.0,745.8 807.5,747.3 808.1,748.8 808.6,750.4 809.0,751.9 809.6,753.5 810.2,755.1 810.7,756.7 811.2,758.3 811.7,759.8 812.2,761.4 813.0,763.0 814.1,764.2 814.8,765.2 815.3,766.4 815.6,767.3","815.6,767.3 816.0,768.3 816.3,769.7 816.7,771.3 817.1,772.7 817.4,774.0 817.8,775.4 818.1,776.5 818.5,778.0 818.8,779.2 819.3,780.5 819.8,782.2 820.4,783.4 821.1,784.6","821.1,784.6 821.6,785.7 822.0,786.6 822.7,787.8 823.5,789.1 824.3,790.6 824.4,791.5 824.5,792.5 824.7,794.1 824.8,795.7 825.0,797.4 825.2,798.8 825.4,800.5 825.5,801.5","825.5,801.5 826.0,802.7 826.5,804.0 827.0,805.2 827.7,806.6 828.4,808.3 829.1,809.9 829.9,811.4 830.6,812.9 831.2,814.2 831.7,815.1 832.4,816.4 833.0,817.8 833.5,819.1 834.0,820.6 834.5,822.2 834.8,823.6 835.1,825.3 835.4,826.7 835.5,828.5 835.9,829.9 836.5,831.1 837.5,832.2 837.9,833.1 838.4,834.4 839.0,835.8 839.5,836.9 839.7,838.2","839.7,838.2 840.0,839.5 840.3,840.9 840.5,842.2 840.7,843.2 841.0,844.7 841.3,846.2 841.5,847.4 841.7,848.9 841.6,850.3 841.5,850.8 841.7,852.3 841.9,853.5 842.1,854.9 842.3,856.3 842.6,857.7 843.0,859.0 843.8,860.3 844.5,861.5 844.4,862.9 844.4,864.5 844.4,865.9","844.4,865.9 844.8,867.2 845.3,868.7 845.7,870.2 846.2,871.7 846.7,873.3 847.3,875.0 847.8,876.6 847.9,877.9 847.5,879.6 847.2,881.0 847.2,882.3 847.2,883.2 847.2,881.8 847.2,883.4 847.4,885.0 847.7,886.8 848.0,888.3 848.1,889.9 848.4,891.3 849.0,892.1","849.0,892.1 850.1,893.2 851.5,894.4 852.8,895.3 854.1,896.2 855.0,897.1 855.5,898.3 855.8,899.8 856.4,901.0 857.4,902.6 858.2,904.0 858.5,905.4 858.7,906.9 859.0,908.6 859.3,910.1 859.5,911.2","859.5,911.2 859.6,912.4 859.9,914.2 860.2,915.9 860.5,917.5 860.8,919.0 861.0,920.4 861.2,921.3 860.5,922.3 859.7,923.6 859.2,925.0 859.0,926.1 859.1,927.1 859.0,928.5 859.0,929.8 859.0,931.1 859.0,932.7 859.2,934.5 859.2,935.0","859.2,935.0 858.5,936.1 858.0,937.7 856.9,938.3 856.1,939.5 855.6,940.3 854.8,939.2 854.1,938.7 853.8,939.9 853.5,941.5 853.4,941.9","853.4,941.9 853.4,943.5 852.8,944.8 852.6,946.3 852.5,948.0 852.5,949.5 852.4,951.1 852.3,952.9 852.3,953.1","852.3,953.1 852.1,954.7 851.2,955.7 849.8,956.1 848.5,956.1 847.2,956.3 845.8,957.1 844.1,957.6 843.0,958.3 842.1,959.4 841.1,960.5 840.1,961.6 839.1,962.6 839.2,962.8","839.2,962.8 838.8,964.0 839.0,965.5 839.5,967.1 839.9,968.5 840.3,970.0 839.2,970.3 837.5,970.8 836.7,971.0","836.7,971.0 836.6,972.1 836.4,973.6 836.5,975.3 836.9,976.9 837.5,978.1 838.3,979.7 839.1,981.2 839.8,982.4 840.1,983.2 840.7,984.4","840.7,984.4 841.4,985.5 842.0,986.5 842.6,987.1 843.4,988.0 844.4,989.0 845.4,990.0 846.4,990.6 847.4,991.2 848.5,992.3 849.3,993.1 849.7,994.2 850.1,995.9 850.5,997.5 850.9,999.0 851.1,1000.0","851.1,1000.0 852.6,999.6 854.0,999.3 855.4,998.9 856.8,998.5 858.2,998.1 859.6,997.8 861.0,997.4 862.3,997.1 863.8,996.7 864.8,996.4"],"gap":"618.7,507.5 619.9,508.9 621.4,510.5 622.9,511.8 624.3,513.4 625.6,514.9 627.1,516.5 628.6,518.2 630.1,519.8 631.6,521.4 633.1,523.0 634.6,524.6 636.1,526.3 637.6,527.9 639.1,529.5 640.6,531.1 642.2,532.7 643.7,534.3 645.2,536.0 646.7,537.6 648.2,539.2 649.7,540.8 651.2,542.4 652.7,544.1 654.2,545.7 655.7,547.3 657.2,548.9 658.7,550.5 660.3,552.2 661.8,553.8 663.3,555.4 664.8,557.0 666.3,558.6 667.8,560.2 669.3,561.9 670.8,563.5 672.3,565.1 673.8,566.7 675.3,568.3 676.8,570.0 678.3,571.6 679.8,573.2 681.3,574.8 682.8,576.4 684.3,578.1 685.9,579.7 687.4,581.3 688.9,582.9 690.4,584.5 691.9,586.2 693.4,587.8 694.9,589.4 696.4,591.0 697.9,592.6 699.4,594.3 700.9,595.9 702.4,597.5 703.9,599.1 705.4,600.7 706.9,602.4 708.4,604.0 709.9,605.6 711.4,607.2 713.0,608.8 714.5,610.5 716.0,612.1 717.5,613.7 719.0,615.3 720.5,616.9 722.0,618.6 723.5,620.2 725.0,621.8 726.5,623.4 728.0,625.0 729.5,626.7 731.0,628.3 732.5,629.9 733.9,631.1 735.4,633.1 736.9,635.2 738.4,636.2 739.9,637.8 741.3,639.4 742.8,641.0 744.3,642.6 745.8,644.2 747.3,645.8 748.7,647.4 750.0,648.9 751.4,650.3 752.9,651.9 754.4,653.5 755.8,655.1 757.3,656.6 758.8,658.2 760.2,659.8 760.7,660.3","ch":[760.7,660.3],"labels":[[[0.0,0.1],"Santa Monica"],[[200.4,182.4],"Long Beach"],[[324.7,279.6],"Huntington Beach"],[[487.4,385.7],"Laguna Beach"],[[618.7,507.5],"San Mateo Point"],[[825.5,801.5],"Encinitas"],[[864.8,996.4],"Finish"]]},"gap":17.7,"ti":21,"rounds":{"1":{"name":"Round 1","desc":"About 4 miles. Dougie runs one 8 mile block once it is light. Santa Monica to Long Beach."},"2":{"name":"Round 2","desc":"3.6 to 4.6 miles, without Dougie. Long Beach to Laguna Beach."},"3":{"name":"Round 3","desc":"2 to 3.2 miles, everyone. Laguna to San Mateo Point, then Oceanside to Carlsbad after the I-5 drive."},"4":{"name":"Round 4","desc":"1.5 to 3.4 miles. Carlsbad to the top of Torrey Pines."},"5":{"name":"Round 5","desc":"1 to 2 miles. Torrey Pines mesa and La Jolla to the finish."}},"trail":["Eli","Sean"],"finish":{"eta":"11:55 PM","lo":"10:57 PM","hi":"1:50 AM"}};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $=id=>document.getElementById(id);
+const pin=p=>`https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lon}`;
+const nav=(a,b)=>`https://www.google.com/maps/dir/?api=1&origin=${a.lat},${a.lon}&destination=${b.lat},${b.lon}&travelmode=driving`;
+const col=r=>`var(--r${r})`;
+const R=D.runners, N=R.length;
+let state={runner:-1,view:"both"};
+try{const s=JSON.parse(localStorage.getItem("cc-state")||"null"); if(s&&typeof s.runner==="number"&&s.runner>=-1&&s.runner<N) state.runner=s.runner; if(s&&["both","run","drive"].includes(s.view)) state.view=s.view;}catch(e){}
+const h=(location.hash||"").slice(1).toLowerCase(); const hi=R.findIndex(n=>n.toLowerCase()===h); if(hi>=0) state.runner=hi;
+
+$("pgrid").innerHTML=R.map((n,i)=>`<div class="prow"><label for="pace-${i}"><span class="dot" style="background:${col(i)}"></span>${esc(n)} <small>${D.totals[i].toFixed(1)} mi</small></label><input id="pace-${i}" class="tin" type="text" inputmode="numeric" autocomplete="off" placeholder="9:30" data-kind="pace" data-id="${esc(n.toLowerCase())}" aria-label="${esc(n)} pace per mile"></div>`).join("");
+
+$("chips").innerHTML=`<button type="button" class="chip" id="chip-all" data-r="-1">Everyone</button>`+
+  R.map((n,i)=>`<button type="button" class="chip" id="chip-${i}" data-r="${i}"><span class="dot" style="background:${col(i)}"></span>${esc(n)}</button>`).join("");
+
+function legCard(l){
+  const a=D.ex[l.start], b=D.ex[l.end], s=l.after?D.chevron:a;
+  const prev=l.n>1?R[D.legs[l.n-2].runner]:null, next=l.n<D.legs.length?R[D.legs[l.n].runner]:null;
+  const tags=`<span class="tag" id="st-${l.n}" hidden></span><span class="tag light" id="lt-${l.n}" hidden>Lights on</span>`+[l.zone?`<span class="tag">${l.zone}</span>`:"",b.confirm?`<span class="tag warn">Confirm stop</span>`:""].join("");
+  const cues=l.cues.length?`<ol class="cues">${l.cues.map(c=>`<li><span>${c.mile<=0.05?"start":c.mile.toFixed(1)+" mi"}</span><div>${esc(c.text)}</div></li>`).join("")}</ol>`:`<p class="muted">No turns. Stay on the same road the whole leg.</p>`;
+  const baths=b.baths.length?`<ul class="baths">${b.baths.map(x=>`<li><a href="${pin(x)}" target="_blank" rel="noopener">${esc(x.name)}</a> <span class="muted">${esc(x.kind)}${x.addr?", "+esc(x.addr.split(",").slice(0,2).join(",")):""}</span></li>`).join("")}</ul>`:`<p class="muted">No bathroom listed at this stop.</p>`;
+  return `<article class="leg" id="leg-${l.n}" data-runner="${l.runner}">
+  <header><div class="num" style="background:${col(l.runner)}">${l.n}</div>
+    <div class="who"><b>${esc(R[l.runner])}</b><span>${l.dist.toFixed(1)} mi · mile ${l.m0.toFixed(1)} to ${l.m1.toFixed(1)}</span></div>
+    <div class="when"><b id="eta-${l.n}"></b><span id="sub-${l.n}"></span></div></header>
+  <div class="tags">${tags}</div>
+  <div class="part run"><span class="lbl">Run</span>
+    <p class="ft">${esc(s.name)} to ${esc(b.name)}<small>${prev?"Takes over from "+esc(prev)+". ":"First leg of the day. "}${next?"Hands off to "+esc(next)+".":"Last leg of the day."}</small></p>
+    ${l.note?`<p class="note">${esc(l.note)}</p>`:""}${cues}</div>
+  <div class="part drive"><span class="lbl">Van</span>
+    <p class="ft">Pick up ${esc(R[l.runner])} at ${esc(b.name)}<small>${esc(b.note)}</small></p>
+    <p class="note">${esc(l.van)}</p>
+    <div class="btns"><a class="btn go" href="${nav(s,b)}" target="_blank" rel="noopener">Drive there</a><a class="btn" href="${pin(b)}" target="_blank" rel="noopener">Handoff pin</a></div>
+    <span class="lbl">Bathrooms at this stop</span>${baths}</div>
+  <div class="part log"><label class="lbl" for="fin-${l.n}">Finish time for leg ${l.n}</label>
+    <div class="logrow"><input id="fin-${l.n}" class="tin tod" type="time" data-kind="fin" data-id="leg-${l.n}"><button type="button" class="btn" data-now="leg-${l.n}">Finished now</button><button type="button" class="btn" data-clear="leg-${l.n}" id="clr-leg-${l.n}" hidden>Clear</button></div>
+    <span class="muted" id="msg-leg-${l.n}">Log the time of day this leg ended. The next runner's start and every later time follow it.</span></div>
+</article>`;
+}
+function transfer(){
+  const a=D.ex[D.ti], c=D.chevron;
+  return `<div class="transfer" id="transfer"><span class="lbl" style="color:inherit">After leg ${D.ti} · everyone in the van</span>
+  <h3>San Mateo Point to Oceanside on I-5</h3>
+  <p>Team photo at San Mateo Point, then the runner and everyone else gets in the van. Nobody runs through Camp Pendleton.</p>
+  <p><b>Van:</b> I-5 south about ${D.gap.toFixed(0)} miles to Exit 54C. Cross the road after the exit and pull into the Chevron at 1601 N Coast Hwy, Oceanside. Leg ${D.ti+1} starts there. Gas, bathrooms and snacks while you are stopped.</p>
+  <div class="btns"><a class="btn" href="${nav(a,c)}" target="_blank" rel="noopener">Drive to the Chevron</a><a class="btn" href="${pin(c)}" target="_blank" rel="noopener">Chevron pin</a></div>
+  <label for="fin-restart"><b>Time the run restarted at the Chevron</b></label>
+  <div class="logrow"><input id="fin-restart" class="tin tod" type="time" data-kind="fin" data-id="restart"><button type="button" class="btn" data-now="restart">Restarted now</button><button type="button" class="btn" data-clear="restart" id="clr-restart" hidden>Clear</button></div>
+  <span class="muted" id="msg-restart">Planned at 40 minutes after leg ${D.ti} ends, until you log it.</span></div>`;
+}
+let html="";
+const TR=D.legs[D.ti-1].round;
+Object.keys(D.rounds).map(Number).sort((a,b)=>a-b).forEach(r=>{
+  const ls=D.legs.filter(l=>l.round===r);
+  html+=`<section class="round"><header><h2>${esc(D.rounds[r].name)}</h2><p>${esc(D.rounds[r].desc)}</p></header>${ls.map(l=>legCard(l)+(l.n===D.ti?transfer():"")).join("")}</section>`;
+});
+$("legs").innerHTML=html;
+
+// map
+(function(){
+  const s=D.svg, pad=30, W=s.w+pad+420, H=s.h+pad*2;
+  const lab=(p,t,cls)=>`<text x="${p[0]+26}" y="${p[1]+14}" class="${cls||""}">${t}</text>`;
+  let g=`<svg viewBox="${-pad} ${-pad} ${W} ${H}" role="img" aria-label="Route map"><polyline class="gap" points="${s.gap}"/>`;
+  s.legs.forEach((p,i)=>{g+=`<polyline data-runner="${D.legs[i].runner}" style="stroke:${col(D.legs[i].runner)}" points="${p}"/>`;});
+  const gp=s.gap.split(" "); const mid=gp[Math.floor(gp.length/2)].split(",").map(Number);
+  s.labels.forEach(([p,t])=>{g+=`<circle cx="${p[0]}" cy="${p[1]}" r="9"/>`+lab(p,t);});
+  g+=`<circle cx="${s.ch[0]}" cy="${s.ch[1]}" r="9"/>`+lab(s.ch,"Oceanside")+lab([mid[0],mid[1]],"van on I-5","gapt")+`</svg>`;
+  $("map").innerHTML=g;
+})();
+
+function renderYou(){
+  const y=$("you");
+  if(state.runner>=0){
+    const ls=D.legs.filter(l=>l.runner===state.runner);
+    y.innerHTML=`<h2><span class="dot" style="background:${col(state.runner)};width:16px;height:16px"></span>${esc(R[state.runner])}<small>${ls.length} legs, ${D.totals[state.runner].toFixed(1)} miles</small></h2>`+
+      ls.map(l=>{const a=l.after?D.chevron:D.ex[l.start],b=D.ex[l.end],c=CALC[l.n]||{};return `<a href="#leg-${l.n}" data-leg="${l.n}"><b>Leg ${l.n}</b><span>${l.dist.toFixed(1)} mi${c.dark?", lights on":""}${c.fin?", finished "+clock(c.fin):""}<em>${esc(a.name)} to ${esc(b.name)}</em></span><i>${c.known?"":"~"}${clock(c.start||0)}</i></a>`;}).join("");
+    y.hidden=false;
+  } else y.hidden=true;
+}
+function apply(){
+  $("wrap").dataset.view=state.view;
+  document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===state.view));
+  document.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.r===state.runner));
+  document.querySelectorAll(".leg").forEach(el=>{el.hidden=state.runner>=0&&+el.dataset.runner!==state.runner;});
+  document.querySelectorAll("#map polyline[data-runner]").forEach(el=>el.classList.toggle("dim",state.runner>=0&&+el.dataset.runner!==state.runner));
+  renderYou();
+  try{localStorage.setItem("cc-state",JSON.stringify(state));}catch(e){}
+}
+$("chips").addEventListener("click",e=>{const b=e.target.closest(".chip"); if(!b)return; state.runner=+b.dataset.r;
+  try{history.replaceState(null,"",state.runner>=0?"#"+R[state.runner].toLowerCase():location.pathname+location.search);}catch(e2){}
+  apply();});
+document.querySelector(".seg").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return; state.view=b.dataset.v; apply();});
+$("you").addEventListener("click",e=>{const a=e.target.closest("a[data-leg]"); if(!a)return; e.preventDefault(); const el=$("leg-"+a.dataset.leg); if(el) el.scrollIntoView({behavior:"smooth",block:"start"});});
+if(D.trail&&D.trail.length){$("trailwho").textContent=D.trail.join(" and ")+" have these legs.";}
+
+// ---------- paces, logged finish times and the ETA waterfall ----------
+const START=5*3600, XFER=40*60, PACE=570, DAY=86400;
+const P={}, F={}, CALC={};          // pace sec/mi by runner key; logged clock times (sec from Friday midnight) by "leg-N" or "restart"; computed times by leg
+const paceOf=i=>P[R[i].toLowerCase()]||PACE;
+const p2=n=>String(n).padStart(2,"0");
+function clock(t){t=Math.round(t/60)*60; const day=Math.floor(t/DAY); t=t%DAY; const h=Math.floor(t/3600), m=Math.floor((t%3600)/60); return `${h%12||12}:${p2(m)} ${h<12?"AM":"PM"}${day>0?" Sat":""}`;}
+function dur(s){s=Math.max(0,Math.round(s)); const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), x=s%60; return h?`${h}:${p2(m)}:${p2(x)}`:`${m}:${p2(x)}`;}
+function parsePace(v){
+  v=String(v).trim(); if(!v) return null; let parts;
+  if(/[:.]/.test(v)) parts=v.split(/[:.]/).map(x=>x.trim());
+  else if(/^\d+$/.test(v)) parts=v.length<=2?[v,"0"]:[v.slice(0,-2),v.slice(-2)];
+  else return NaN;
+  if(parts.length!==2||parts.some(x=>!/^\d+$/.test(x))) return NaN;
+  const n=parts.map(Number); return n[1]>59?NaN:n[0]*60+n[1];
+}
+// a time of day earlier than the 5:00 AM gun means Saturday morning
+function fromField(v){ const m=/^(\d{1,2}):(\d{2})/.exec(String(v||"")); if(!m) return null; let s=Number(m[1])*3600+Number(m[2])*60; if(s<START) s+=DAY; return s; }
+function toField(s){ s=Math.round(s/60)*60%DAY; return p2(Math.floor(s/3600))+":"+p2(Math.floor((s%3600)/60)); }
+const okPace=v=>typeof v==="number"&&isFinite(v)&&v>=240&&v<=1200;
+const okTime=v=>typeof v==="number"&&isFinite(v)&&v>=START&&v<START+DAY;
+function recompute(){
+  let t=START, known=true, last=0;              // known: this leg's start comes from a logged time, not an estimate
+  D.legs.forEach(l=>{ if(F["leg-"+l.n]) last=l.n; });
+  D.legs.forEach(l=>{
+    if(l.after){ if(F.restart){t=F.restart; known=true;} else {t+=XFER; known=false;} }
+    const fin=F["leg-"+l.n]||null, est=l.dist*paceOf(l.runner), end=fin||t+est;
+    CALC[l.n]={start:t,end,fin,est,known,ran:fin&&known&&fin>t?fin-t:null,dark:t<6*3600+55*60||end>17*3600+50*60};
+    t=end; known=!!fin;
+  });
+  const next=last<D.legs.length?last+1:null, ae=document.activeElement;
+  D.legs.forEach(l=>{
+    const c=CALC[l.n];
+    $("eta-"+l.n).textContent=(c.known?"":"~")+clock(c.start);
+    $("sub-"+l.n).textContent=c.fin?`finished ${clock(c.fin)}`+(c.ran?`, ${dur(c.ran/l.dist)}/mi`:""):`about ${Math.round(c.est/60)} min at ${dur(paceOf(l.runner))}`;
+    $("lt-"+l.n).hidden=!c.dark;
+    const st=$("st-"+l.n); st.hidden=!(c.fin||(last>0&&l.n===next)); st.textContent=c.fin?"Done":"Up next"; st.className="tag "+(c.fin?"done":"next");
+    const inp=$("fin-"+l.n); if(inp!==ae) inp.value=c.fin?toField(c.fin):"";
+    $("clr-leg-"+l.n).hidden=!c.fin;
+  });
+  R.forEach((n,i)=>{const inp=$("pace-"+i); if(inp!==ae){inp.value=dur(paceOf(i)); inp.removeAttribute("aria-invalid");}});
+  const ri=$("fin-restart"); if(ri){ if(ri!==ae) ri.value=F.restart?toField(F.restart):""; $("clr-restart").hidden=!F.restart; }
+  const nl=next?D.legs[next-1]:null;
+  $("facts").innerHTML=[
+    [D.total.toFixed(1)+" mi","running, "+D.legs.length+" legs"],
+    [D.gap.toFixed(0)+" mi","in the van on I-5"],
+    [nl?"Leg "+nl.n:"Done",nl?(last>0?"up next: ":"first up: ")+esc(R[nl.runner])+", "+(CALC[nl.n].known?"":"~")+clock(CALC[nl.n].start):"every leg is logged"],
+    [(next?"~":"")+clock(t),next?"projected finish":"finish"]
+  ].map(f=>`<div><b>${f[0]}</b><small>${f[1]}</small></div>`).join("");
+  renderYou();
+}
+const DB="https://no-shortcuts-default-rtdb.firebaseio.com/race";
+const pending={};            // "paces/jack" or "finishes/leg-3" -> value (null = delete) not yet confirmed by the database
+let tree={}, es=null, flushing=false;
+function setSync(s){
+  $("sync").textContent={pending:"Connecting to the shared copy.",live:"Shared live. Anyone with this link can update paces and times.",offline:"No connection to the shared copy right now. Changes are kept on this phone and sent when you are back online."}[s];
+}
+function cache(){ try{localStorage.setItem("cc-race",JSON.stringify({paces:P,finishes:F,pending}));}catch(e){} }
+async function flush(){
+  if(flushing||!Object.keys(pending).length) return;
+  flushing=true;
+  try{
+    for(const path of Object.keys(pending)){
+      const val=pending[path];
+      const r=await fetch(DB+"/"+path+".json",{method:val==null?"DELETE":"PUT",headers:{"Content-Type":"application/json"},body:val==null?undefined:JSON.stringify(val)});
+      if(!r.ok) throw new Error("save failed "+r.status);
+      if(pending[path]===val) delete pending[path];
+    }
+    setSync("live");
+  }catch(e){ setSync("offline"); }
+  flushing=false; cache();
+}
+function save(coll,id,val){
+  const map=coll==="paces"?P:F; if(val==null) delete map[id]; else map[id]=val;
+  pending[coll+"/"+id]=val; cache(); recompute(); flush();
+}
+function applyTree(){
+  fill(P,(tree&&tree.paces)||{},okPace); fill(F,(tree&&tree.finishes)||{},okTime);
+  for(const path in pending){ const s=path.split("/"), map=s[0]==="paces"?P:F; if(pending[path]==null) delete map[s[1]]; else map[s[1]]=pending[path]; }
+  cache(); recompute();
+}
+function setAt(path,data,merge){
+  const parts=String(path||"/").split("/").filter(Boolean);
+  if(!tree||typeof tree!=="object") tree={};
+  if(!parts.length&&!merge){ tree=(data&&typeof data==="object")?data:{}; return; }
+  let o=tree;
+  const walk=n=>{ for(let i=0;i<n;i++){ if(typeof o[parts[i]]!=="object"||o[parts[i]]===null) o[parts[i]]={}; o=o[parts[i]]; } };
+  if(merge){ walk(parts.length); for(const k in (data||{})){ if(data[k]===null) delete o[k]; else o[k]=data[k]; } return; }
+  walk(parts.length-1); const k=parts[parts.length-1];
+  if(data===null) delete o[k]; else o[k]=data;
+}
+async function poll(){
+  try{ const r=await fetch(DB+".json",{cache:"no-store"}); if(!r.ok) throw new Error(r.status); tree=(await r.json())||{}; applyTree(); if(Object.keys(pending).length) flush(); else setSync("live"); }
+  catch(e){ setSync("offline"); }
+}
+function listen(){
+  if(es){ try{es.close();}catch(e){} es=null; }
+  if(!("EventSource" in window)){ poll(); return; }
+  es=new EventSource(DB+".json");
+  const on=merge=>e=>{ try{ const m=JSON.parse(e.data); setAt(m.path,m.data,merge); applyTree(); if(Object.keys(pending).length) flush(); else setSync("live"); }catch(err){} };
+  es.addEventListener("put",on(false)); es.addEventListener("patch",on(true));
+  es.onerror=()=>setSync("offline");
+}
+function fill(map,obj,ok){ for(const k in map) delete map[k]; for(const k in obj){ if(ok(obj[k])) map[k]=obj[k]; } }
+document.addEventListener("change",e=>{
+  const inp=e.target; if(!inp.classList||!inp.classList.contains("tin")) return;
+  if(inp.dataset.kind==="fin"){ const v=fromField(inp.value); if(v===null&&inp.value) return; save("finishes",inp.dataset.id,v); return; }
+  const v=parsePace(inp.value), msg=$("pmsg");
+  if(v!==null&&!okPace(v)){ inp.setAttribute("aria-invalid","true"); msg.hidden=false; msg.textContent="That pace did not read as minutes and seconds. Try 9:30 or 930."; return; }
+  inp.removeAttribute("aria-invalid"); msg.hidden=true;
+  save("paces",inp.dataset.id,v);
+});
+document.addEventListener("click",e=>{
+  const b=e.target.closest&&e.target.closest("[data-now],[data-clear]"); if(!b||b.disabled) return;
+  if(b.dataset.clear){ save("finishes",b.dataset.clear,null); return; }
+  const d=new Date(); let s=d.getHours()*3600+d.getMinutes()*60; if(s<START) s+=DAY;
+  save("finishes",b.dataset.now,s);
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.classList&&e.target.classList.contains("tin")) e.target.blur(); });
+recompute();
+apply();
+try{
+  const c=JSON.parse(localStorage.getItem("cc-race")||"null");
+  if(c){ tree={paces:c.paces||{},finishes:c.finishes||{}}; for(const k in (c.pending||{})) pending[k]=c.pending[k]; applyTree(); }
+}catch(e){}
+listen();
+setTimeout(()=>{ if(!es||es.readyState!==1) poll(); },6000);
+setInterval(()=>{ if(!es||es.readyState===2) listen(); else if(es.readyState!==1) poll(); flush(); },20000);
+window.addEventListener("online",()=>{ listen(); flush(); });
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"){ if(!es||es.readyState!==1) listen(); flush(); } });
+</script>
+</body>
+</html>
